@@ -19,6 +19,7 @@ class SurveyInviter
     @message = attributes[:message] || ''
     @recipients = attributes[:recipients] || ''
     @sender = attributes[:sender]
+    @email = Email.new(@recipients)
   end
 
   attr_reader :message, :recipients, :survey
@@ -41,7 +42,7 @@ class SurveyInviter
 
   def invalid_recipients
     @invalid_recipients ||= recipient_list.map do |item|
-      unless item.match(EMAIL_REGEX)
+      unless @email.is_email?(item)
         item
       end
     end.compact
@@ -58,6 +59,6 @@ class SurveyInviter
   end
 
   def recipient_list
-    @recipient_list ||= @recipients.gsub(/\s+/, '').split(/[\n,;]+/)
+    @recipient_list ||= @email.remove_spaces
   end
 end
